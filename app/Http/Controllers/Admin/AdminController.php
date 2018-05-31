@@ -143,11 +143,21 @@ class AdminController extends Controller
 
     public function ips(Request $request)
     {
-        $ips = Ip::withoutGlobalScopes()->where($request->except(['page']))->withCount(
-            ['comments' => function ($query) {
-                $query->withTrashed();
-            }]
-        )->with(['user'])->orderBy('user_id', 'id')->paginate(20);
+        $where = $request->except(['page']);
+        if($where != null) {
+           $ips = Ip::withoutGlobalScopes()->where($request->except(['page']))->withCount(
+                    ['comments' => function ($query) {
+                        $query->withTrashed();
+                    }]
+                    )->with(['user'])->orderBy('user_id', 'id')->paginate(20); 
+        } else {
+            $ips = Ip::withoutGlobalScopes()->withCount(
+                    ['comments' => function ($query) {
+                        $query->withTrashed();
+                    }]
+                    )->with(['user'])->orderBy('user_id', 'id')->paginate(20); 
+        } 
+        
         $ips->appends($request->except('page'));
         return view('admin.ips', compact('ips'));
     }
