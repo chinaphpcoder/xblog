@@ -120,7 +120,12 @@ class AdminController extends Controller
 
     public function users(Request $request)
     {
-        $users = User::where($request->except(['page']))->paginate(20);
+        $where = $request->except(['page']);
+        if( $where != null ) {
+            $users = User::where($where)->paginate(20);
+        } else {
+            $users = User::paginate(20);
+        }
         $users->appends($request->except('page'));
         return view('admin.users', compact('users'));
     }
