@@ -101,7 +101,12 @@ class AdminController extends Controller
 
     public function comments(Request $request)
     {
-        $comments = Comment::withoutGlobalScopes()->where($request->except(['page']))->orderBy('created_at', 'desc')->paginate(20);
+        $where = $request->except(['page']);
+        if( $where != null ) {
+            $comments = Comment::withoutGlobalScopes()->where($request->except(['page']))->orderBy('created_at', 'desc')->paginate(20);
+        } else {
+            $comments = Comment::withoutGlobalScopes()->orderBy('created_at', 'desc')->paginate(20);
+        }    
         $comments->appends($request->except('page'));
         return view('admin.comments', compact('comments'));
     }
